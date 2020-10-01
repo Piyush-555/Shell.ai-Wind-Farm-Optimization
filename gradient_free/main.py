@@ -88,7 +88,7 @@ def save_params(params):
         'x': coords[:, 0],
         'y': coords[:, 1]
     })
-    df.to_csv('Submissions/cma_best_from_fixed.csv', index=False)
+    df.to_csv('Submissions/cma_best_from_fixed_resarted.csv', index=False)
 
 
 if __name__ == "__main__":
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     # patience = 3
     # patience_length = 10
 
-    path = "Submissions/fixed_2000.csv"
+    path = "Submissions/cma_best_from_fixed.csv"
     turb_coords = evaluator.getTurbLoc(path)
 
     es = cma.CMAEvolutionStrategy(coords2param(turb_coords), 0.1667)
