@@ -36,7 +36,7 @@ def get_constraints_penalty(turb_coords, verbose=False, turb_diam=100):
         correct_clrnc = farm_poly.boundary.distance(turb) >= bound_clrnc
         if (inside_farm == False or correct_clrnc == False):
             peri_constr_viol += 1
-            peri_penalty += 20 - 1/5 * farm_poly.boundary.distance(turb) * (1 if inside_farm else -1)
+            peri_penalty += 2 - 1/50 * farm_poly.boundary.distance(turb) * (1 if inside_farm else -1)
     
     # checks if for every turbines proximity constraint is satisfied. 
     # increments prox_constr_viol if violated.
@@ -45,7 +45,7 @@ def get_constraints_penalty(turb_coords, verbose=False, turb_diam=100):
         for turb2 in turb_coords[i+1:]:
             if  np.linalg.norm(turb1 - turb2) < 4 * turb_diam:
                 prox_constr_viol += 1
-                prox_penalty += 20 - 1/40 * np.linalg.norm(turb1 - turb2)
+                prox_penalty += 2 - 1/400 * np.linalg.norm(turb1 - turb2)
     
     if verbose:
         print("Perimeter Constraints Violated:", peri_constr_viol, "\tProximity Constraints Violated:", prox_constr_viol)
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     path = "Submissions/fixed_2000.csv"
     turb_coords = evaluator.getTurbLoc(path)
 
-    es = cma.CMAEvolutionStrategy(coords2param(turb_coords), 0.167)
+    es = cma.CMAEvolutionStrategy(coords2param(turb_coords), 0.1667)
     # queue = [0,]
 
     fig = plt.figure()
