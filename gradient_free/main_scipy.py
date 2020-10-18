@@ -11,7 +11,7 @@ from shapely.geometry.polygon import Polygon
 import Farm_Evaluator_Vec as evaluator
 
 
-def get_constraints():
+def get_constraints(bounds=False):
     constraints = []
     for i in range(50):
         for j in range(i+1, 50):
@@ -19,6 +19,15 @@ def get_constraints():
                 turb_params = params.reshape((50, 2))
                 return np.linalg.norm(turb_params[i] - turb_params[j]) - 0.1
             constraints.append({'type': 'ineq', 'fun': constraint})
+    
+    if bounds:
+        for k in range(100):
+            def constraint_lower(params):
+                return params[k] - 0.0125
+            def constraint_upper(params):
+                return 0.9875 - params[k]
+            constraints.append({'type': 'ineq', 'fun': constraint_lower})
+            constraints.append({'type': 'ineq', 'fun': constraint_upper})
     return constraints
 
 
@@ -54,7 +63,7 @@ def save_params(params):
         'x': coords[:, 0],
         'y': coords[:, 1]
     })
-    df.to_csv('Submissions/SLSQPv1.csv', index=False)
+    df.to_csv('Submissions/COBYLAv1.csv', index=False)
 
 
 if __name__ == "__main__":
@@ -64,8 +73,14 @@ if __name__ == "__main__":
     turb_coords = evaluator.getTurbLoc(path)
     params0 = coords2param(turb_coords)
     bounds = [(0.0125, 0.9875)] * 100
-    cnstr = get_constraints()
-    result = optimize.minimize(objective, params0, method='SLSQP', bounds=bounds, constraints=cnstr, options={'finite_diff_rel_step': '3-point'})
+    cnstr = get_constraints(bounds=True)
+    options = {
+        'disp': True,
+        'rhobeg': 0.001,
+        'maxiter': 10000,
+        'catol': 0.0
+    }
+    result = optimize.minimize(objective, params0, method='COBYLA', bounds=bounds, constraints=cnstr, options=options)
     print(result)
     save_params(result.x)
     coords = param2coords(result.x)

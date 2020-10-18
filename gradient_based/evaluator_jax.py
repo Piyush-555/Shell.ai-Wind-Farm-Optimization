@@ -518,7 +518,7 @@ if __name__ == "__main__":
     
     # Pass wind data csv file location to function binWindResourceData.
     # Retrieve probabilities of wind instance occurence.
-    wind_inst_freq =  binWindResourceData('./Shell_Hackathon Dataset/Wind Data/wind_data_2007.csv')   
+    wind_inst_freq =  binWindResourceData('./Shell_Hackathon Dataset/Wind Data/all.csv')   
     
     # Doing preprocessing to avoid the same repeating calculations. Record 
     # the required data for calculations. Do that once. Data are set up (shaped)
@@ -532,11 +532,12 @@ if __name__ == "__main__":
     checkConstraints(turb_coords, turb_diam)
     
     print('Calculating AEP......')
-    AEP = getAEP(turb_rad, turb_coords, power_curve_jax, wind_inst_freq, 
-                  n_wind_instances, cos_dir, sin_dir, wind_sped_stacked, C_t) 
-    print('Total power produced by the wind farm is: ', "%.12f"%(AEP), 'GWh')
+    comb = jax.value_and_grad(getAEP, argnums=1)
+    # AEP = getAEP(turb_rad, turb_coords, power_curve_jax, wind_inst_freq, 
+    #               n_wind_instances, cos_dir, sin_dir, wind_sped_stacked, C_t) 
+    # print('Total power produced by the wind farm is: ', "%.12f"%(AEP), 'GWh')
 
-    grad_aep = jax.grad(getAEP, 1)
-    gradients = grad_aep(turb_rad, turb_coords, power_curve_jax, wind_inst_freq, 
+    # grad_aep = jax.grad(getAEP, 1)
+    gradients = comb(turb_rad, turb_coords, power_curve_jax, wind_inst_freq, 
                   n_wind_instances, cos_dir, sin_dir, wind_sped_stacked, C_t)
     print(gradients)
